@@ -61,6 +61,8 @@ class State:
             else: print('#')
 
     def goal_state(self, n):
+        # if self.heuristic == 0:
+        #     return True
         for i in self.decks:
             if check(i, n):
                 pass
@@ -140,13 +142,18 @@ def a_star(initial_state, actions, n, k):
         node.print_state()
         print()
         temp = dic.pop(node_key)
+        # print("temp and node")
+        # print("************")
         # print(temp)
+        # print("-------------")
+        # print(node.decks)
         explored.append(temp)
 
         for a in actions:
             flag, child = action(temp, a)
             # print("child", child)
             if flag:
+                # print(child in explored)
                 if child not in explored:
                     h = heuristic_func(child, k)
                     x = copy.deepcopy(node.path)
@@ -156,8 +163,8 @@ def a_star(initial_state, actions, n, k):
                         print("the goal state is:")
                         child_state.print_state()
                         return child_state, explored
-                    frontier[h+node.path+1] = child_state
-                    dic[h+node.path+1] = child
+                    frontier[h+x+1] = child_state
+                    dic[h+x+1] = child
 
     return "failure", explored
 
@@ -184,8 +191,9 @@ if __name__ == '__main__':
     h = heuristic_func(decks, int(k))
     state = State(int(k), None, h, 0)
     state.add_decks(decks)
-    state.print_state()
+    # state.print_state()
     goal, ex = a_star(state, action_arr, int(n), int(k))
+    depth = 0
     if goal != "failure":
         print("********************")
         print("number of explored nodes: {}".format(len(ex)))
@@ -193,12 +201,14 @@ if __name__ == '__main__':
         print("the path is:")
         while s.parent is not None:
             s = s.parent
+            depth += 1
             for q in s.decks:
                 if len(q) > 0:
                     print(*q)
                 else: print('#')
             print()
         print("********************")
+        print("depth of the path is: ", depth)
 
     else: print("********could not find a solution*********")
 
