@@ -148,6 +148,7 @@ if __name__ == '__main__':
     state.add_slots(slots)
     state.print_state()
     goal, ex = bfs(state, int(n), int(k), action_arr)
+    depth = 0
     if goal != "failure":
         print("********************")
         print("number of explored nodes: {}".format(len(ex)))
@@ -155,12 +156,14 @@ if __name__ == '__main__':
         print("the path is:")
         while s.parent is not None:
             s = s.parent
+            depth += 1
             for q in s.slots:
                 if len(q) > 0:
                     print(*q)
                 else: print('#')
             print()
         print("********************")
+        print("depth of the path is: ", depth)
 
     else: print("********could not find a solution*********")
 

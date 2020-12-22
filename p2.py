@@ -12,13 +12,6 @@ class State:
         for i in range(self.no):
             temp = slots[i]
             self.slots.append(temp)
-
-    def print_state(self):
-        for i in self.slots:
-            if len(i) > 0:
-                print(*i)
-            else: print('#')
-
     def goal_state(self, n):
         for i in self.slots:
             if check_s(i, n):
@@ -32,6 +25,7 @@ class State:
             if len(i) > 0:
                 print(*i)
             else: print('#')
+        print()
 
 
 def check_s(lst, n):
@@ -54,7 +48,10 @@ def check_s(lst, n):
             count -= 1
         return flag
     return True
+
+
 path = []
+
 
 def action(s, act):
     t = copy.deepcopy(s)
@@ -75,7 +72,7 @@ def action(s, act):
                 temp[act[1]].append(b)
                 temp[act[0]].append(a)
 
-                return False,temp
+                return False, temp
         else:
             temp[act[1]].append(a)
             # print(temp)
@@ -88,7 +85,7 @@ def action(s, act):
 def dls(initial_state, actions, limit, k, n):
     global path
     if initial_state.goal_state(n):
-        print("goal")
+        print("goal state is: ")
         initial_state.prints()
         return initial_state
 
@@ -114,7 +111,8 @@ def ids(initial_state, actions, depth, k, n):
     for limit in range(0, depth):
         if dls(initial_state, actions, limit, k, n):
             e = dls(initial_state, actions, limit, k, n)
-            print("there is a solution")
+            print("a solution exists")
+            print()
             done = True
             return e
 
@@ -144,13 +142,14 @@ if __name__ == '__main__':
                 action_arr.append(tmp)
     state = State(int(k), None)
     state.add_slots(slots)
-    state.print_state()
+    state.prints()
     y = ids(state, action_arr, depth, int(k), int(n))
+    d = 0
     if len(path) > 0:
         s = path.pop()
         s.prints()
 
-        print(y)
+        # print(y)
         print("the path is:")
         while s.parent is not None:
             s = s.parent
@@ -159,8 +158,10 @@ if __name__ == '__main__':
                     print(*q)
                 else:
                     print('#')
+            d += 1
             print()
         print("********************")
+        print("the depth is: ", d)
 
 
 
