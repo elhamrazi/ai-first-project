@@ -7,11 +7,11 @@ def get_colors(lst):
         c = temp[0]
         lc = len(c)
         colorc = c[lc - 1:lc]
-        for i in temp:
-            l = len(i)
-            color = i[l - 1:l]
+        for i in range(len(temp)):
+            l = len(temp[i])
+            color = temp[i][l - 1:l]
             if color != colorc:
-                count += 1
+                count += get_inv(temp, i) + 1
     return count
 
 
@@ -22,13 +22,12 @@ def heuristic_func(lst, k):
     return total
 
 
-def get_inv(arr):
+def get_inv(arr, index):
     inv_count = 0
     n = len(arr)
-    for i in range(n):
-        for j in range(i + 1, n):
-            if arr[i] < arr[j]:
-                inv_count += 1
+    for j in range(index + 1, n):
+        if arr[index] < arr[j]:
+            inv_count += 1
 
     return inv_count
 
@@ -61,8 +60,8 @@ class State:
             else: print('#')
 
     def goal_state(self, n):
-        # if self.heuristic == 0:
-        #     return True
+        if self.heuristic == 0:
+            return True
         for i in self.decks:
             if check(i, n):
                 pass
@@ -202,6 +201,7 @@ if __name__ == '__main__':
         while s.parent is not None:
             s = s.parent
             depth += 1
+            print("↑\n")
             for q in s.decks:
                 if len(q) > 0:
                     print(*q)
@@ -209,6 +209,9 @@ if __name__ == '__main__':
             print()
         print("********************")
         print("depth of the path is: ", depth)
+        print("you can see the path above")
+        print("the goal state is:")
+        goal.print_state()
 
     else: print("********could not find a solution*********")
 
