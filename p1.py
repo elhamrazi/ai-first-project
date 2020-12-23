@@ -11,23 +11,23 @@ created = 0
 class Node:
 
     def __init__(self, deck_no, parent):
-        self.slots = []
+        self.decks = []
         self.no = deck_no
         self.parent = parent
 
-    def add_slots(self, slots):
+    def add_decks(self, decks):
         for i in range(self.no):
-            temp = slots[i]
-            self.slots.append(temp)
+            temp = decks[i]
+            self.decks.append(temp)
 
     def print_state(self):
-        for i in self.slots:
+        for i in self.decks:
             if len(i) > 0:
                 print(*i)
             else: print('#')
 
     def goal_state(self):
-        for i in self.slots:
+        for i in self.decks:
             if check(i):
                 pass
             else:
@@ -96,7 +96,7 @@ def bfs(initial_state, k, actions):
     frontier = []
     explored = []
     parents = [initial_state]
-    frontier.append(initial_state.slots)
+    frontier.append(initial_state.decks)
     done = False
     while len(frontier) > 0 and not done and len(parents) > 0:
         print("number of nodes in frontier: ", len(frontier))
@@ -110,7 +110,7 @@ def bfs(initial_state, k, actions):
                 if child not in explored and child not in frontier:
                     created += 1
                     child_node = Node(k, pstate)
-                    child_node.add_slots(child)
+                    child_node.add_decks(child)
                     if child_node.goal_state():
                         done = True
                         print("the goal state is: ")
@@ -126,14 +126,14 @@ def bfs(initial_state, k, actions):
 
 def main():
     k, m, n = input().split()
-    slots = []
+    decks = []
     for i in range(int(k)):
         slot = []
         x = input().split()
         if x[0] != '#':
             for j in x:
                 slot.append(j)
-        slots.append(slot)
+        decks.append(slot)
 
     action_arr = []
     for i in range(int(k)):
@@ -144,7 +144,7 @@ def main():
                 action_arr.append(tmp)
     # random.shuffle(action_arr)
     node = Node(int(k), None)
-    node.add_slots(slots)
+    node.add_decks(decks)
     node.print_state()
     goal, ex = bfs(node, int(k), action_arr)
     depth = 0

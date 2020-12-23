@@ -8,17 +8,17 @@ explored = 0
 class Node:
 
     def __init__(self, deck_no, parent):
-        self.slots = []
+        self.decks = []
         self.no = deck_no
         self.parent = parent
 
     def add_slots(self, slots):
         for i in range(self.no):
             temp = slots[i]
-            self.slots.append(temp)
+            self.decks.append(temp)
 
     def goal_state(self):
-        for i in self.slots:
+        for i in self.decks:
             if check(i):
                 pass
             else:
@@ -26,7 +26,7 @@ class Node:
         return True
 
     def prints(self):
-        for i in self.slots:
+        for i in self.decks:
             if len(i) > 0:
                 print(*i)
             else: print('#')
@@ -97,7 +97,7 @@ def dls(state, actions, limit, k, n):
             return False
         explored += 1
         for a in actions:
-            flag, child = action(state.slots, a)
+            flag, child = action(state.decks, a)
             child_node = Node(k, state)
             child_node.add_slots(child)
             created += 1
@@ -129,14 +129,14 @@ def main():
     global path, explored, created
     depth = int(input("enter depth "))
     k, m, n = input().split()
-    slots = []
+    decks = []
     for i in range(int(k)):
         slot = []
         x = input().split()
         if x[0] != '#':
             for j in x:
                 slot.append(j)
-        slots.append(slot)
+        decks.append(slot)
 
     action_arr = []
     for i in range(int(k)):
@@ -145,7 +145,7 @@ def main():
                 tmp = (i, j)
                 action_arr.append(tmp)
     node = Node(int(k), None)
-    node.add_slots(slots)
+    node.add_slots(decks)
     node.prints()
     y = ids(node, action_arr, depth, int(k), int(n))
     if not y:
@@ -159,7 +159,7 @@ def main():
             print("↑\n")
             while s.parent is not None:
                 s = s.parent
-                for q in s.slots:
+                for q in s.decks:
                     if len(q) > 0:
                         print(*q)
                     else:
