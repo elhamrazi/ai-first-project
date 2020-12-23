@@ -112,7 +112,7 @@ def dls(state, actions, limit, k, n):
 
 def ids(initial_state, actions, depth, k, n):
     done = False
-    for limit in range(0, depth):
+    for limit in range(depth, 100000):
         if dls(initial_state, actions, limit, k, n):
             e = dls(initial_state, actions, limit, k, n)
             print("a solution exists")
@@ -127,7 +127,7 @@ def ids(initial_state, actions, depth, k, n):
 
 def main():
     global path, explored, created
-    depth = int(input("enter depth "))
+    depth = int(input("enter initial depth "))
     k, m, n = input().split()
     decks = []
     for i in range(int(k)):
