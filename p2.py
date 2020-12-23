@@ -153,6 +153,7 @@ if __name__ == '__main__':
         print("the path is:")
         while s.parent is not None:
             s = s.parent
+            print("↑")
             for q in s.slots:
                 if len(q) > 0:
                     print(*q)
@@ -162,6 +163,7 @@ if __name__ == '__main__':
             print()
         print("********************")
         print("the depth is: ", d)
+        print("you can see the path above:")
 
 
 
