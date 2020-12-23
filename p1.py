@@ -2,7 +2,7 @@ import copy
 import random
 
 
-class State:
+class Node:
 
     def __init__(self, deck_no, parent):
         self.slots = []
@@ -20,16 +20,16 @@ class State:
                 print(*i)
             else: print('#')
 
-    def goal_state(self, n):
+    def goal_state(self):
         for i in self.slots:
-            if check_s(i, n):
+            if check_s(i):
                 pass
             else:
                 return False
         return True
 
 
-def check_s(lst, n):
+def check_s(lst):
     temp = lst
     if len(temp) > 0:
         c = temp[0]
@@ -81,8 +81,8 @@ def action(s, act):
     return False, temp
 
 
-def bfs(initial_state, n, k, actions):
-    if initial_state.goal_state(n):
+def bfs(initial_state, k, actions):
+    if initial_state.goal_state():
         print("goal")
         initial_state.print_state()
         return
@@ -94,29 +94,29 @@ def bfs(initial_state, n, k, actions):
     done = False
     while len(frontier) > 0 and not done and len(parents) > 0:
         print("number of nodes in frontier: ", len(frontier))
-        node = frontier.pop(0)
-        pnode = parents.pop(0)
-        explored.append(node)
+        state = frontier.pop(0)
+        pstate = parents.pop(0)
+        explored.append(state)
 
         for a in actions:
 
-            flag, child = action(node, a)
+            flag, child = action(state, a)
             if flag:
 
                 if child not in explored and child not in frontier:
-                    child_state = State(k, pnode)
-                    child_state.add_slots(child)
-                    if child_state.goal_state(n):
+                    child_node = Node(k, pstate)
+                    child_node.add_slots(child)
+                    if child_node.goal_state():
                         done = True
                         print("the goal state is: ")
                         for q in child:
                             if len(q) > 0:
                                 print(*q)
                             else: print('#')
-                        return child_state, explored
+                        return child_node, explored
                     else:
                         frontier.append(child)
-                        parents.append(child_state)
+                        parents.append(child_node)
                         for q in child:
                             if len(q) > 0:
                                 print(*q)
@@ -144,10 +144,10 @@ if __name__ == '__main__':
                 tmp = (i, j)
                 action_arr.append(tmp)
     # random.shuffle(action_arr)
-    state = State(int(k), None)
-    state.add_slots(slots)
-    state.print_state()
-    goal, ex = bfs(state, int(n), int(k), action_arr)
+    node = Node(int(k), None)
+    node.add_slots(slots)
+    node.print_state()
+    goal, ex = bfs(node, int(k), action_arr)
     depth = 0
     if goal != "failure":
         print("********************")
@@ -157,13 +157,18 @@ if __name__ == '__main__':
         while s.parent is not None:
             s = s.parent
             depth += 1
+
             for q in s.slots:
                 if len(q) > 0:
                     print(*q)
                 else: print('#')
+            print("\n↑")
             print()
         print("********************")
         print("depth of the path is: ", depth)
+        print("you can see the path above")
+        print("the goal state is:")
+        goal.print_state()
 
     else: print("********could not find a solution*********")
 
