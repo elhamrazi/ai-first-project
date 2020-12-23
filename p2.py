@@ -1,7 +1,10 @@
 import copy
 
+path = []
+created = 0
+explored = 0
 
-class State:
+class Node:
 
     def __init__(self, deck_no, parent):
         self.slots = []
@@ -12,9 +15,10 @@ class State:
         for i in range(self.no):
             temp = slots[i]
             self.slots.append(temp)
-    def goal_state(self, n):
+
+    def goal_state(self):
         for i in self.slots:
-            if check_s(i, n):
+            if check_s(i):
                 pass
             else:
                 return False
@@ -28,7 +32,7 @@ class State:
         print()
 
 
-def check_s(lst, n):
+def check_s(lst):
     temp = lst
     if len(temp) > 0:
         c = temp[0]
@@ -48,9 +52,6 @@ def check_s(lst, n):
             count -= 1
         return flag
     return True
-
-
-path = []
 
 
 def action(s, act):
@@ -82,27 +83,29 @@ def action(s, act):
     return False, temp
 
 
-def dls(initial_state, actions, limit, k, n):
-    global path
-    if initial_state.goal_state(n):
+def dls(state, actions, limit, k, n):
+    global path, explored, created
+    if state.goal_state():
         print("goal state is: ")
-        initial_state.prints()
-        return initial_state
+        state.prints()
+        return state
 
     else:
+
         if limit <= 0:
             return False
-        path = []
+        explored += 1
         for a in actions:
-            flag, child = action(initial_state.slots, a)
-            child_state = State(k, initial_state)
-            child_state.add_slots(child)
+            flag, child = action(state.slots, a)
+            child_node = Node(k, state)
+            child_node.add_slots(child)
+            created += 1
             if flag:
                 if len(path) == limit:
                     path.clear()
-                path.append(child_state)
-                child_state.prints()
-                if dls(child_state, actions, limit-1, k, n):
+                path.append(child_node)
+                child_node.prints()
+                if dls(child_node, actions, limit-1, k, n):
                     return True
 
 
@@ -121,9 +124,10 @@ def ids(initial_state, actions, depth, k, n):
     return done
 
 
-if __name__ == '__main__':
-    k, m, n = input().split()
+def main():
+    global path, explored, created
     depth = int(input("enter depth "))
+    k, m, n = input().split()
     slots = []
     for i in range(int(k)):
         slot = []
@@ -136,36 +140,39 @@ if __name__ == '__main__':
     action_arr = []
     for i in range(int(k)):
         for j in range(int(k)):
-            tmp = ()
             if i != j:
                 tmp = (i, j)
                 action_arr.append(tmp)
-    state = State(int(k), None)
-    state.add_slots(slots)
-    state.prints()
-    y = ids(state, action_arr, depth, int(k), int(n))
-    d = 0
-    if len(path) > 0:
-        s = path.pop()
-        s.prints()
+    node = Node(int(k), None)
+    node.add_slots(slots)
+    node.prints()
+    y = ids(node, action_arr, depth, int(k), int(n))
+    if not y:
+        print("***********no solution found************")
+    else:
+        d = 0
+        if len(path) > 0:
+            s = path.pop()
+            print("the path is:")
+            s.prints()
+            print("↑\n")
+            while s.parent is not None:
+                s = s.parent
+                for q in s.slots:
+                    if len(q) > 0:
+                        print(*q)
+                    else:
+                        print('#')
+                d += 1
+                print("\n↑")
+                print()
+            print("********************")
+            print("the depth is: ", d)
+            print("number of explored nodes: ", explored)
+            print("number of created nodes: ", created)
+            print("you can see the path above")
 
-        # print(y)
-        print("the path is:")
-        while s.parent is not None:
-            s = s.parent
-            print("↑")
-            for q in s.slots:
-                if len(q) > 0:
-                    print(*q)
-                else:
-                    print('#')
-            d += 1
-            print()
-        print("********************")
-        print("the depth is: ", d)
-        print("you can see the path above:")
 
-
-
-
+if __name__ == '__main__':
+    main()
 

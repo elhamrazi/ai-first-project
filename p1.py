@@ -125,7 +125,7 @@ def bfs(initial_state, k, actions):
     return "failure", explored
 
 
-if __name__ == '__main__':
+def main():
     k, m, n = input().split()
     slots = []
     for i in range(int(k)):
@@ -161,7 +161,8 @@ if __name__ == '__main__':
             for q in s.slots:
                 if len(q) > 0:
                     print(*q)
-                else: print('#')
+                else:
+                    print('#')
             print("\n↑")
             print()
         print("********************")
@@ -170,24 +171,10 @@ if __name__ == '__main__':
         print("the goal state is:")
         goal.print_state()
 
-    else: print("********could not find a solution*********")
+    else:
+        print("********could not find a solution*********")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+if __name__ == '__main__':
+    main()
 
