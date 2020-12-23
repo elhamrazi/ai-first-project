@@ -1,5 +1,11 @@
 import copy
 import random
+created = 0
+# 4 3 3
+# 1a 2a 3b
+# 3a
+# 1c 1b 3c
+# 2b 2c
 
 
 class Node:
@@ -22,14 +28,14 @@ class Node:
 
     def goal_state(self):
         for i in self.slots:
-            if check_s(i):
+            if check(i):
                 pass
             else:
                 return False
         return True
 
 
-def check_s(lst):
+def check(lst):
     temp = lst
     if len(temp) > 0:
         c = temp[0]
@@ -82,14 +88,14 @@ def action(s, act):
 
 
 def bfs(initial_state, k, actions):
+    global created
     if initial_state.goal_state():
         print("goal")
         initial_state.print_state()
         return
     frontier = []
     explored = []
-    parents = []
-    parents.append(initial_state)
+    parents = [initial_state]
     frontier.append(initial_state.slots)
     done = False
     while len(frontier) > 0 and not done and len(parents) > 0:
@@ -99,28 +105,21 @@ def bfs(initial_state, k, actions):
         explored.append(state)
 
         for a in actions:
-
             flag, child = action(state, a)
             if flag:
-
                 if child not in explored and child not in frontier:
+                    created += 1
                     child_node = Node(k, pstate)
                     child_node.add_slots(child)
                     if child_node.goal_state():
                         done = True
                         print("the goal state is: ")
-                        for q in child:
-                            if len(q) > 0:
-                                print(*q)
-                            else: print('#')
+                        child_node.print_state()
                         return child_node, explored
                     else:
                         frontier.append(child)
                         parents.append(child_node)
-                        for q in child:
-                            if len(q) > 0:
-                                print(*q)
-                            else: print('#')
+                        child_node.print_state()
                         print("---------")
     return "failure", explored
 
@@ -151,22 +150,21 @@ def main():
     depth = 0
     if goal != "failure":
         print("********************")
-        print("number of explored nodes: {}".format(len(ex)))
         s = goal
         print("the path is:")
+        goal.print_state()
+        print("\n↑")
+        print()
         while s.parent is not None:
             s = s.parent
             depth += 1
-
-            for q in s.slots:
-                if len(q) > 0:
-                    print(*q)
-                else:
-                    print('#')
+            s.print_state()
             print("\n↑")
             print()
         print("********************")
         print("depth of the path is: ", depth)
+        print("number of explored nodes: {}".format(len(ex)))
+        print("number of created nodes: ", created)
         print("you can see the path above")
         print("the goal state is:")
         goal.print_state()

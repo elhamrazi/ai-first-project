@@ -4,6 +4,7 @@ path = []
 created = 0
 explored = 0
 
+
 class Node:
 
     def __init__(self, deck_no, parent):
@@ -18,7 +19,7 @@ class Node:
 
     def goal_state(self):
         for i in self.slots:
-            if check_s(i):
+            if check(i):
                 pass
             else:
                 return False
@@ -32,7 +33,7 @@ class Node:
         print()
 
 
-def check_s(lst):
+def check(lst):
     temp = lst
     if len(temp) > 0:
         c = temp[0]

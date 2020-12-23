@@ -1,4 +1,11 @@
 import copy
+created = 0
+# 4 3 3
+# 1a 2a 3b
+# 3a
+# 1c 1b 3c
+# 2b 2c
+
 
 def get_colors(lst):
     temp = lst
@@ -10,12 +17,12 @@ def get_colors(lst):
         for i in range(len(temp)):
             l = len(temp[i])
             color = temp[i][l - 1:l]
-            if color != colorc:
-                count += get_inv(temp, i) + 1
+            if color != colorc or get_inv(temp, i) > 0 or not check(lst):
+                count += len(temp) - i + 1
     return count
 
 
-def heuristic_func(lst, k):
+def get_heuristic(lst, k):
     total = 0
     for i in range(k):
         total += get_colors(lst[i])
@@ -35,12 +42,11 @@ def get_inv(arr, index):
 def count_inversions(lst, k):
     total = 0
     for i in range(k):
-        # print("inv shit: ", lst[i])
-        total += get_inv(lst[i])
+        total += get_inv(lst[i], i)
     return total
 
 
-class State:
+class Node:
     def __init__(self, deck_no, parent, heuristic, path):
         self.decks = []
         self.no = deck_no
@@ -59,24 +65,23 @@ class State:
                 print(*i)
             else: print('#')
 
-    def goal_state(self, n):
+    def goal_state(self):
         if self.heuristic == 0:
             return True
         for i in self.decks:
-            if check(i, n):
+            if check(i):
                 pass
             else:
                 return False
         return True
 
 
-def check(lst, n):
+def check(lst):
     temp = lst
     if len(temp) > 0:
         c = temp[0]
         lc = len(c)
         colorc = c[lc - 1:lc]
-        # print("kir: ", c[0:lc - 1])
         count = int(c[0:lc - 1])
         flag = True
         for i in temp:
@@ -94,36 +99,37 @@ def check(lst, n):
 
 
 def action(s, act):
-            t = copy.deepcopy(s)
-            temp = t
-            if len(temp[act[0]]) > 0:
-                a = temp[act[0]].pop()
-                if len(temp[act[1]]) > 0:
-                    b = temp[act[1]].pop()
-                    la = len(a)
-                    numbera = int(a[0:la - 1])
-                    lb = len(b)
-                    numberb = int(b[0:lb - 1])
-                    if numbera < numberb:
-                        temp[act[1]].append(b)
-                        temp[act[1]].append(a)
-                        return True, temp
-                    else:
-                        temp[act[1]].append(b)
-                        temp[act[0]].append(a)
-
-                        return False, temp
-                else:
+        t = copy.deepcopy(s)
+        temp = t
+        if len(temp[act[0]]) > 0:
+            a = temp[act[0]].pop()
+            if len(temp[act[1]]) > 0:
+                b = temp[act[1]].pop()
+                la = len(a)
+                numbera = int(a[0:la - 1])
+                lb = len(b)
+                numberb = int(b[0:lb - 1])
+                if numbera < numberb:
+                    temp[act[1]].append(b)
                     temp[act[1]].append(a)
-                    # print(temp)
-
                     return True, temp
+                else:
+                    temp[act[1]].append(b)
+                    temp[act[0]].append(a)
 
-            return False, temp
+                    return False, temp
+            else:
+                temp[act[1]].append(a)
+                # print(temp)
+
+                return True, temp
+
+        return False, temp
 
 
 def a_star(initial_state, actions, n, k):
-    if initial_state.goal_state(n):
+    global created
+    if initial_state.goal_state():
         print("goal state")
         initial_state.print_state()
         print()
@@ -141,11 +147,6 @@ def a_star(initial_state, actions, n, k):
         node.print_state()
         print()
         temp = dic.pop(node_key)
-        # print("temp and node")
-        # print("************")
-        # print(temp)
-        # print("-------------")
-        # print(node.decks)
         explored.append(temp)
 
         for a in actions:
@@ -154,11 +155,12 @@ def a_star(initial_state, actions, n, k):
             if flag:
                 # print(child in explored)
                 if child not in explored:
-                    h = heuristic_func(child, k)
+                    h = get_heuristic(child, k)
                     x = copy.deepcopy(node.path)
-                    child_state = State(k, node, h, x+1)
+                    created += 1
+                    child_state = Node(k, node, h, x + 1)
                     child_state.add_decks(child)
-                    if child_state.goal_state(n):
+                    if child_state.goal_state():
                         print("the goal state is:")
                         child_state.print_state()
                         return child_state, explored
@@ -186,16 +188,16 @@ if __name__ == '__main__':
             if i != j:
                 tmp = (i, j)
                 action_arr.append(tmp)
-    # random.shuffle(action_arr)
-    h = heuristic_func(decks, int(k))
-    state = State(int(k), None, h, 0)
+
+    h = get_heuristic(decks, int(k))
+    state = Node(int(k), None, h, 0)
     state.add_decks(decks)
-    # state.print_state()
+
     goal, ex = a_star(state, action_arr, int(n), int(k))
     depth = 0
     if goal != "failure":
         print("********************")
-        print("number of explored nodes: {}".format(len(ex)))
+
         s = goal
         print("the path is:")
         while s.parent is not None:
@@ -209,6 +211,8 @@ if __name__ == '__main__':
             print()
         print("********************")
         print("depth of the path is: ", depth)
+        print("number of explored nodes: {}".format(len(ex)))
+        print("number of created nodes: ", created)
         print("you can see the path above")
         print("the goal state is:")
         goal.print_state()
